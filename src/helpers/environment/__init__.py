@@ -35,7 +35,11 @@ def _caminho(chave, padrao):
     return str(caminho if caminho.is_absolute() else RAIZ_PROJETO / caminho)
 
 
-DB_NAME = _caminho("DB_NAME", "datasets/censo_escolar.db")
+DB_HOST = _texto("DB_HOST", "localhost")
+DB_PORT = _inteiro("DB_PORT", 5435)
+DB_NAME = _texto("DB_NAME", "censoescolar")
+DB_USER = _texto("DB_USER", "postgres")
+DB_PASSWORD = _texto("DB_PASSWORD", "")
 CAMINHO_JSON_INSTITUICOES = _caminho(
     "CAMINHO_JSON_INSTITUICOES", "datasets/escolas_pb_matriculas_2025.json"
 )
