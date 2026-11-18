@@ -1,9 +1,14 @@
-import sqlite3
 from contextlib import contextmanager
+
+import psycopg2
 
 from helpers.environment import LIMIT_MAXIMO_PAGINA
 from helpers.logger import logger
-from services.excecoes import ErroInternoError, ValidacaoError
+from services.excecoes import (
+    ErroInternoError,
+    ServicoIndisponivelError,
+    ValidacaoError,
+)
 
 TIPOS_DELETE_VALIDOS = ("logico", "fisico")
 
@@ -63,9 +68,12 @@ class BaseService:
     @staticmethod
     @contextmanager
     def _erro_interno(mensagem):
-        """Converte falhas do SQLite em ErroInternoError, registrando o log."""
+        """Converte falhas do PostgreSQL em erros de serviço, registrando o log."""
         try:
             yield
-        except sqlite3.Error:
+        except psycopg2.OperationalError:
+            logger.exception(mensagem)
+            raise ServicoIndisponivelError("Banco de dados indisponível")
+        except psycopg2.Error:
             logger.exception(mensagem)
             raise ErroInternoError(mensagem)

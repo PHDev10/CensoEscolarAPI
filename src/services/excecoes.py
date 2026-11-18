@@ -14,5 +14,9 @@ class NaoEncontradoError(ServicoError):
     """Registro inexistente (ou inativo)."""
 
 
+class ServicoIndisponivelError(ServicoError):
+    """Banco de dados inacessível (falha de conexão)."""
+
+
 class ErroInternoError(ServicoError):
     """Falha inesperada de infraestrutura (ex: banco de dados)."""
