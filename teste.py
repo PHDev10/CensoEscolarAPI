@@ -305,5 +305,5 @@ if FALHAS:
         print(f"  - {falha}")
     raise SystemExit(1)
 print(
-    f"Resultado: {TOTAL}/{TOTAL} testes passaram. Persistência no banco de dados SQLite OK!"
+    f"Resultado: {TOTAL}/{TOTAL} testes passaram. Persistência no banco de dados PostgreSQL OK!"
 )
