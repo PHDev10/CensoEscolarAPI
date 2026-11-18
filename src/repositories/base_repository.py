@@ -52,15 +52,12 @@ class BaseRepository:
                 campos[coluna] = valor
         return campos
 
-    def listar(self, page=None, limit=None):
+    def listar(self, page, limit):
         sql = f"SELECT * FROM {self.tabela} WHERE ativo = 1"
         if self.ordem_padrao:
             sql += f" ORDER BY {self.ordem_padrao}"
-        if page is not None and limit is not None:
-            offset = (page - 1) * limit
-            sql += " LIMIT %s OFFSET %s"
-            return self._executar(sql, (limit, offset))
-        return self._executar(sql)
+        sql += " LIMIT %s OFFSET %s"
+        return self._executar(sql, (limit, (page - 1) * limit))
 
     def contar_ativos(self):
         linha = self._executar(

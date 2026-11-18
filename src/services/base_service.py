@@ -16,25 +16,18 @@ TIPOS_DELETE_VALIDOS = ("logico", "fisico")
 class BaseService:
     """Regras comuns aos services: paginação, validação do corpo e do tipo de delete."""
 
-    limit_padrao = None
+    limit_padrao = 100
 
     def __init__(self, repositorio):
         self.repositorio = repositorio
 
     def listar(self, page=None, limit=None):
-        """Retorna (registros, total). O total é None quando não há paginação."""
-        paginacao = self._ler_paginacao(page, limit)
-        if paginacao is None:
-            return self.repositorio.listar(), None
-
-        page, limit = paginacao
+        """Retorna (registros, total) sempre paginados (page=1, limit=100 por padrão)."""
+        page, limit = self._ler_paginacao(page, limit)
         total = self.repositorio.contar_ativos()
         return self.repositorio.listar(page=page, limit=limit), total
 
     def _ler_paginacao(self, raw_page, raw_limit):
-        if raw_page is None and raw_limit is None:
-            return None
-
         page, limit = 1, self.limit_padrao
         try:
             if raw_page is not None:
@@ -46,14 +39,12 @@ class BaseService:
                 "Os parâmetros 'page' e 'limit' devem ser números inteiros"
             )
 
-        if page < 1 or (limit is not None and limit < 1):
+        if page < 1 or limit < 1:
             raise ValidacaoError(
                 "Os parâmetros 'page' e 'limit' devem ser números inteiros positivos"
             )
 
-        if limit is not None:
-            limit = min(limit, LIMIT_MAXIMO_PAGINA)
-        return page, limit
+        return page, min(limit, LIMIT_MAXIMO_PAGINA)
 
     @staticmethod
     def _validar_corpo(corpo):
