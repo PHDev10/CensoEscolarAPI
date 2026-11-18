@@ -16,7 +16,7 @@ class UsuarioRepository(BaseRepository):
     def id_ja_utilizado(self, id_valor):
         return (
             self._executar(
-                f"SELECT 1 FROM {self.tabela} WHERE {self.pk} = ?",
+                f"SELECT 1 FROM {self.tabela} WHERE {self.pk} = %s",
                 (id_valor,),
                 fetch="one",
             )

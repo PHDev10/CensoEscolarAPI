@@ -1,5 +1,4 @@
-import sqlite3
-
+import psycopg2
 from flask import jsonify
 
 from helpers.logger import logger
@@ -8,6 +7,7 @@ from services.excecoes import (
     ErroInternoError,
     NaoEncontradoError,
     ServicoError,
+    ServicoIndisponivelError,
     ValidacaoError,
 )
 
@@ -16,6 +16,7 @@ STATUS_POR_ERRO = {
     NaoEncontradoError: 404,
     ConflitoError: 409,
     ErroInternoError: 500,
+    ServicoIndisponivelError: 503,
 }
 
 
@@ -34,7 +35,12 @@ def registrar_handlers(app):
     def metodo_nao_permitido(_erro):
         return jsonify({"erro": "Método não permitido para esta rota"}), 405
 
-    @app.errorhandler(sqlite3.Error)
+    @app.errorhandler(psycopg2.OperationalError)
+    def banco_indisponivel(_erro):
+        logger.exception("Banco de dados indisponível")
+        return jsonify({"erro": "Banco de dados indisponível"}), 503
+
+    @app.errorhandler(psycopg2.Error)
     def erro_banco(_erro):
         logger.exception("Erro de banco de dados não tratado")
         return jsonify({"erro": "Erro interno: falha no banco de dados"}), 500

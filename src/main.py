@@ -1,3 +1,6 @@
+import sys
+
+import psycopg2
 from flask import Flask
 
 from controllers.instituicao_ensino_controller import instituicao_ensino_bp
@@ -18,4 +21,9 @@ def create_app():
 
 
 if __name__ == "__main__":
-    create_app().run(port=FLASK_PORT, debug=FLASK_DEBUG)
+    try:
+        app = create_app()
+    except psycopg2.OperationalError:
+        # a mensagem clara já foi registrada em inicializar_banco()
+        sys.exit(1)
+    app.run(port=FLASK_PORT, debug=FLASK_DEBUG)
